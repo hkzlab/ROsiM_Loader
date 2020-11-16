@@ -140,7 +140,7 @@ public class ROsiMProto {
     } 
 
     public static int handleIOSWResponse(final String response) {
-        return handleNumericResponse(response, CMD_RWSW);
+        return handleNumericResponse(response, CMD_IOSW);
     } 
 
     public static int handleERSTResponse(final String response) {

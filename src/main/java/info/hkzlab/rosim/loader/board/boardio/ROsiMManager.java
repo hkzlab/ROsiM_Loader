@@ -106,7 +106,7 @@ public class ROsiMManager {
                     }
                 }
 
-                logger.trace("Response <- " + resp);
+                logger.trace("Response <- " + respBuf.toString());
                 
                 return respBuf.toString().trim();
             } catch (SerialPortException e) {

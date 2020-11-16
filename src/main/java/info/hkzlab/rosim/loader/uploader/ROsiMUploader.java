@@ -87,14 +87,14 @@ public class ROsiMUploader {
         rsci.switchRW(false); // Write mode
         rsci.address(0);
 
-        logger.info("uploadBinary8 -> Start upload!");
+        logger.info("uploadBinary8 -> Started upload!");
 
         for(int idx = 0; idx < buf.length; idx++) {
             rsci.write(buf[idx] & 0xFF);
             rsci.addressIncrement();
         }
 
-        logger.info("uploadBinary8 -> Start verification!");
+        logger.info("uploadBinary8 -> Started verification!");
 
         rsci.switchRW(true); // Read mode
         rsci.address(0);
@@ -109,11 +109,51 @@ public class ROsiMUploader {
             rsci.addressIncrement();
         }
 
+        logger.info("uploadBinary8 -> Done!");
+
         return true;
     }
 
     private static boolean uploadBinary16(ROsiMCmdInterface rsci, byte[] buf, boolean swap) 
         throws ROsiMProtoException, ROsiMBoardException {
-        return false;
+            if((buf.length % 2) > 0) {
+                logger.error("uploadBinary16 -> File contains an odd number of bytes!");
+                return false;
+            }
+
+            rsci.switchRW(false); // Write mode
+            rsci.address(0);
+    
+            logger.info("uploadBinary16 -> Started upload!");
+    
+            for(int idx = 0; idx < buf.length; idx+=2) {
+                if(swap) rsci.write((buf[idx+1] & 0xFF) | ((buf[idx] & 0xFF) << 8));
+                else rsci.write((buf[idx] & 0xFF) | ((buf[idx+1] & 0xFF) << 8));
+                rsci.addressIncrement();
+            }
+    
+            logger.info("uploadBinary16 -> Started verification!");
+    
+            rsci.switchRW(true); // Read mode
+            rsci.address(0);
+    
+            for(int idx = 0; idx < buf.length; idx+=2) {
+                int data = rsci.read();
+                int expected;
+
+                if(swap) expected = ((buf[idx+1] & 0xFF) | ((buf[idx] & 0xFF) << 8));
+                else expected = ((buf[idx] & 0xFF) | ((buf[idx+1] & 0xFF) << 8));
+
+                if(data != expected) {
+                    logger.error("uploadBinary16 -> Failed verification at address " + String.format("%08X", idx) + " E:"+String.format("%04X", data)+" A:"+String.format("%04X", expected));
+                    return false;
+                }
+    
+                rsci.addressIncrement();
+            }
+    
+            logger.info("uploadBinary16 -> Done!");
+    
+            return true;
     }
 }
