@@ -4,6 +4,7 @@ import java.io.File;
 import org.slf4j.*;
 
 import info.hkzlab.rosim.loader.board.boardio.*;
+import info.hkzlab.rosim.loader.uploader.ROsiMUploader;
 import info.hkzlab.rosim.loader.uploader.ROsiMUploader.FileType;
 
 public class App {
@@ -27,20 +28,30 @@ public class App {
 
         parseArgs(args);
 
-        ROsiMManager dpm = new ROsiMManager(serialDevice);
-        ROsiMCmdInterface dpci = new ROsiMCmdInterface(dpm);
+        ROsiMManager rsm = new ROsiMManager(serialDevice);
+        ROsiMCmdInterface rsci = new ROsiMCmdInterface(rsm);
 
-        if (!dpm.enterRemoteMode()) {
-            logger.error("Unable to put DuPAL board in REMOTE MODE!");
+        if (!rsm.enterRemoteMode()) {
+            logger.error("Unable to put ROsiM board in REMOTE MODE!");
             System.exit(-1);
         } 
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                dpci.resetBoard();
+                rsci.resetBoard();
             }
         });
+
+        rsci.extReset(true); // Enable the external reset
+
+        if(ROsiMUploader.upload(rsci, inFile, fType)) {
+            logger.info("Upload completed, disabling the external reset!");
+            rsci.extReset(false);
+
+            // Enter into a forever loop
+            while(true) Thread.sleep(5000);
+        }
     }
 
     private static void parseArgs(String[] args) {
