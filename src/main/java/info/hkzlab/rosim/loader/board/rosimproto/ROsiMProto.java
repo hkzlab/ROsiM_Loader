@@ -82,11 +82,7 @@ public class ROsiMProto {
         return ""+CMD_START+CMD_RESET+CMD_END;
     }
 
-    public static int handleREADResponse(final String response) {
-        return handleByteResponse(response, CMD_READ);
-    }
-
-    public static int handleByteResponse(final String response, final char expectedCmd) {
+    public static int handleNumericResponse(final String response, final char expectedCmd) {
         String[] readRes = parseResponse(response);
 
         if((readRes == null) || readRes.length != 2 || !isStringResponseCommand(response) || readRes[0].charAt(0) != expectedCmd) return -1;
@@ -98,20 +94,49 @@ public class ROsiMProto {
         }
     }
 
+    
+    public static String[] handleMultiStringResponse(final String response, final int expectedLen, final char expectedCmd) {
+        String[] readRes = parseResponse(response);
+
+        if((readRes == null) || readRes.length != expectedLen || !isStringResponseCommand(response) || readRes[0].charAt(0) != expectedCmd) return null;
+        
+        return readRes;
+    }
+
     public static int handleMODELResponse(final String response) {
-        return handleByteResponse(response, CMD_MODEL);
+        return handleNumericResponse(response, CMD_MODEL);
     }
 
     public static int handleWRITEResponse(final String response) {
-         String[] readRes = parseResponse(response);
+        return handleNumericResponse(response, CMD_WRITE);
+    }
 
-        if((readRes == null) || readRes.length != 2 || !isStringResponseCommand(response) || readRes[0].charAt(0) != CMD_WRITE) return -1;
-        
-        try {
-            return Integer.parseInt(readRes[1], 16);
-        } catch(NumberFormatException e) {
-            return -1;
-        }       
+    public static int handleREADesponse(final String response) {
+        return handleNumericResponse(response, CMD_READ);
+    }
+    
+    public static int handleRWSWesponse(final String response) {
+        return handleNumericResponse(response, CMD_RWSW);
+    } 
+
+    public static int handleIOSWesponse(final String response) {
+        return handleNumericResponse(response, CMD_RWSW);
+    } 
+
+    public static String[] handleVIEWResponse(final String response) {
+        return handleMultiStringResponse(response, 3, CMD_VIEW);
+    }
+
+    public static String[] handleDEFAULTResponse(final String response) {
+        return handleMultiStringResponse(response, 1, CMD_DEFAULT);
+    }
+
+    public static int handleADDRESSResponse(final String response) {
+        return handleNumericResponse(response, CMD_ADDRESS);
+    }
+
+    public static int handleADRINCRResponse(final String response) {
+        return handleNumericResponse(response, CMD_ADRINCR);
     }
 
     public static String[] parseResponse(String response) {
@@ -125,14 +150,27 @@ public class ROsiMProto {
         } else if(response.startsWith(RESP_START) && response.endsWith(RESP_END)) {
             response = response.substring(1, response.length()-1).trim();
             char command = response.charAt(0);
+            String[] cmd_comp = response.split(" ");
             switch(command) {
+                case CMD_DEFAULT: {
+                    if(cmd_comp.length != 1) return null;
+                    return cmd_comp;                    
+                }
                 case CMD_MODEL:
-                case CMD_READ: 
+                case CMD_RWSW:
+                case CMD_ERST:
+                case CMD_IOSW:
+                case CMD_READ:
+                case CMD_ADDRESS:
+                case CMD_ADRINCR:
                 case CMD_WRITE: {
-                        String[] cmd_comp = response.split(" ");
                         if(cmd_comp.length != 2) return null;
                         return cmd_comp;
                     }
+                case CMD_VIEW: {
+                    if(cmd_comp.length != 3) return null;
+                    return cmd_comp;                   
+                }
                 default:
                     return null;
             }
