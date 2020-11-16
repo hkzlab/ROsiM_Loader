@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import info.hkzlab.rosim.loader.board.rosimproto.ROsiMProto;
 import info.hkzlab.rosim.loader.exceptions.ROsiMBoardException;
+import info.hkzlab.rosim.loader.exceptions.ROsiMProtoException;
 
 public class ROsiMCmdInterface {
     private static final Logger logger = LoggerFactory.getLogger(ROsiMCmdInterface.class);
@@ -19,7 +20,7 @@ public class ROsiMCmdInterface {
         dpm.writeCommand(ROsiMProto.buildRESETCommand());
     }
 
-    public void setDefaults() throws ROsiMBoardException {
+    public void setDefaults() throws ROsiMBoardException, ROsiMProtoException {
         dpm.writeCommand(ROsiMProto.buildDEFAULTCommand());
         if(!ROsiMProto.handleDEFAULTResponse(dpm.readResponse())) {
             logger.error("setDefaults() -> FAILED!");
@@ -27,13 +28,25 @@ public class ROsiMCmdInterface {
         }
     }
 
-    public int write(int data) throws ROsiMBoardException {
+    public int write(int data) throws ROsiMBoardException, ROsiMProtoException {
         dpm.writeCommand(ROsiMProto.buildWRITECommand(data));
         int res = ROsiMProto.handleWRITEResponse(dpm.readResponse());
 
         if(res < 0) {
-            logger.error("write("+String.format("%08X", data)+") -> FAILED!");
-            throw new ROsiMBoardException("write("+String.format("%08X", data)+") command failed!");
+            logger.error("write("+String.format("%04X", data)+") -> FAILED!");
+            throw new ROsiMBoardException("write("+String.format("%04X", data)+") command failed!");
+        }
+
+        return res;
+    }
+
+    public int read() throws ROsiMBoardException, ROsiMProtoException {
+        dpm.writeCommand(ROsiMProto.buildREADCommand());
+        int res = ROsiMProto.handleWRITEResponse(dpm.readResponse());
+
+        if(res < 0) {
+            logger.error("read() -> FAILED!");
+            throw new ROsiMBoardException("read() command failed!");
         }
 
         return res;

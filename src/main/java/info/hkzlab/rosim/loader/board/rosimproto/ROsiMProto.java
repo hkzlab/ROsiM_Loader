@@ -39,6 +39,17 @@ public class ROsiMProto {
         return cmd.startsWith(RESP_START) && cmd.endsWith(RESP_END);
     }
 
+    
+    public static boolean isResponseInvalid(String str) {
+        str = str.trim();
+        return str.startsWith("CMD_INV");
+    }
+
+    public static boolean isResponseError(String str) {
+        str = str.trim();
+        return str.startsWith("CMD_ERR");
+    }
+
     public static String buildMODELCommand() {
         return CMD_START+CMD_MODEL+CMD_END;
     }

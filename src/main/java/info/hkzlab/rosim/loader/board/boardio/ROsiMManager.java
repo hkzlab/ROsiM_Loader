@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import info.hkzlab.rosim.loader.board.rosimproto.ROsiMProto;
+import info.hkzlab.rosim.loader.exceptions.ROsiMProtoException;
 import jssc.SerialPort;
 import jssc.SerialPortException;
 import jssc.SerialPortTimeoutException;
@@ -79,7 +80,7 @@ public class ROsiMManager {
         }
     }
 
-    public String readResponse() {
+    public String readResponse() throws ROsiMProtoException {
          if((serport != null) && serport.isOpened()) {
             StringBuffer respBuf = new StringBuffer();
 
@@ -97,6 +98,10 @@ public class ROsiMManager {
                         else if (ROsiMProto.isStringComment(respBuf.toString())) {
                             respBuf.delete(0, respBuf.length());
                             continue;
+                        } else if (ROsiMProto.isResponseError(respBuf.toString())) {
+                            throw new ROsiMProtoException("Error response to command");
+                        } else if (ROsiMProto.isResponseInvalid(respBuf.toString())) {
+                            throw new ROsiMProtoException("Invalid command");
                         }
                     }
                 }

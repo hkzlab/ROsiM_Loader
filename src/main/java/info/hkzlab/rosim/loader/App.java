@@ -35,7 +35,7 @@ public class App {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                dpci.reset();
+                dpci.resetBoard();
             }
         });
     }
