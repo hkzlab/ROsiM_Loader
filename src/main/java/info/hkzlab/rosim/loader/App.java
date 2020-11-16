@@ -45,6 +45,8 @@ public class App {
         });
 
         rsci.setDefaults();
+
+        logger.info("Enabling external reset!");
         rsci.extReset(true); // Enable the external reset
 
         if(ROsiMUploader.upload(rsci, inFile, fType)) {
