@@ -1,7 +1,5 @@
 package info.hkzlab.rosim.loader.board.boardio;
 
-import javax.swing.border.EmptyBorder;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
