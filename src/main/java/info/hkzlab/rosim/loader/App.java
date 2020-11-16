@@ -4,6 +4,7 @@ import java.io.File;
 import org.slf4j.*;
 
 import info.hkzlab.rosim.loader.board.boardio.*;
+import info.hkzlab.rosim.loader.uploader.ROsiMUploader.FileType;
 
 public class App {
     private final static Logger logger = LoggerFactory.getLogger(App.class);
@@ -12,12 +13,14 @@ public class App {
 
     private static String serialDevice = null;
     private static String inFile = null;
+    private static FileType fType = null;
 
     public static void main(String[] args) throws Exception {
         logger.info("ROsiM Loader " + version);
 
         if (args.length < 3) {
-            logger.error("Wrong number of arguments passed.\n");
+            logger.error("Wrong number of arguments passed.\n" +
+                         "rosim-loader <serial_device> <input_file> <fitype>\n\n");
 
             return;
         }
@@ -43,6 +46,14 @@ public class App {
     private static void parseArgs(String[] args) {
         serialDevice = args[0];
         inFile = args[1];
+
+        try {
+            fType = FileType.valueOf(args[2].toUpperCase());
+        } catch(IllegalArgumentException e) {
+            logger.error("Invalid file type " + args[2] + " specified!");
+            System.exit(-1);
+        }
+
         checkFilePath(inFile);
     }
 
