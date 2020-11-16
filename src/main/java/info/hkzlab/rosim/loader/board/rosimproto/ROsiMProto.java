@@ -75,7 +75,7 @@ public class ROsiMProto {
     }
 
     public static String buildERSTCommand(final boolean reset) {
-        return ""+CMD_START+CMD_ERST+" "+(reset ? '1':'0')+CMD_END;
+        return ""+CMD_START+CMD_ERST+" "+(reset ? '0':'1')+CMD_END;
     }
 
     public static String buildRWSWCommand(final boolean read) {

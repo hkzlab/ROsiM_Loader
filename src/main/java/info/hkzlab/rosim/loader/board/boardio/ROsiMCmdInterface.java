@@ -1,5 +1,7 @@
 package info.hkzlab.rosim.loader.board.boardio;
 
+import javax.swing.border.EmptyBorder;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,5 +100,17 @@ public class ROsiMCmdInterface {
         }
 
         return res != 0;
+    }
+
+    public boolean extReset(boolean enabled) throws ROsiMProtoException, ROsiMBoardException {
+        rsm.writeCommand(ROsiMProto.buildERSTCommand(enabled));
+        int res = ROsiMProto.handleERSTResponse(rsm.readResponse());
+
+        if(res < 0) {
+            logger.error("extReset() -> FAILED!");
+            throw new ROsiMBoardException("extReset() command failed!");
+        }
+
+        return res == 0;
     }
 }
