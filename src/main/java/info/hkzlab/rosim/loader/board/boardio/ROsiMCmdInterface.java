@@ -15,14 +15,21 @@ public class ROsiMCmdInterface {
         this.dpm = dpm;
     }
 
-    public void reset() {
+    public void resetBoard() {
         dpm.writeCommand(ROsiMProto.buildRESETCommand());
     }
 
+    public void setDefaults() throws ROsiMBoardException {
+        dpm.writeCommand(ROsiMProto.buildDEFAULTCommand());
+        if(!ROsiMProto.handleDEFAULTResponse(dpm.readResponse())) {
+            logger.error("setDefaults() -> FAILED!");
+            throw new ROsiMBoardException("setDefaults() command failed!");            
+        }
+    }
+
     public int write(int data) throws ROsiMBoardException {
-        int res;
         dpm.writeCommand(ROsiMProto.buildWRITECommand(data));
-        res = ROsiMProto.handleWRITEResponse(dpm.readResponse());
+        int res = ROsiMProto.handleWRITEResponse(dpm.readResponse());
 
         if(res < 0) {
             logger.error("write("+String.format("%08X", data)+") -> FAILED!");

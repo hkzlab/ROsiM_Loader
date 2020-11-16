@@ -1,8 +1,6 @@
 package info.hkzlab.rosim.loader;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-
 import org.slf4j.*;
 
 import info.hkzlab.rosim.loader.board.boardio.*;

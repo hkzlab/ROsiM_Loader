@@ -136,8 +136,8 @@ public class ROsiMProto {
         return handleMultiStringResponse(response, 3, CMD_VIEW);
     }
 
-    public static String[] handleDEFAULTResponse(final String response) {
-        return handleMultiStringResponse(response, 1, CMD_DEFAULT);
+    public static boolean handleDEFAULTResponse(final String response) {
+        return (handleMultiStringResponse(response, 1, CMD_DEFAULT) != null);
     }
 
     public static int handleADDRESSResponse(final String response) {
