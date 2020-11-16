@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import info.hkzlab.rosim.loader.board.dupalproto.DuPALProto;
+import info.hkzlab.rosim.loader.board.rosimproto.ROsiMProto;
 import jssc.SerialPort;
 import jssc.SerialPortException;
 import jssc.SerialPortTimeoutException;
@@ -93,7 +93,7 @@ public class DuPALManager {
                     else {
                         respBuf.append(resp);
                         retries = SERIAL_READ_RETRIES; // Reset the retries counter
-                        if(DuPALProto.isStringResponseCommand(respBuf.toString())) break; // If we end with a character that could terminate the response, exit from here
+                        if(ROsiMProto.isStringResponseCommand(respBuf.toString())) break; // If we end with a character that could terminate the response, exit from here
                     }
                 }
 

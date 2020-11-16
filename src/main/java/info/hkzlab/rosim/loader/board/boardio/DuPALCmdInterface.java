@@ -3,9 +3,9 @@ package info.hkzlab.rosim.loader.board.boardio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import info.hkzlab.rosim.loader.board.dupalproto.DuPALProto;
+import info.hkzlab.rosim.loader.board.rosimproto.ROsiMProto;
 import info.hkzlab.rosim.loader.devices.PALSpecs;
-import info.hkzlab.rosim.loader.exceptions.DuPALBoardException;
+import info.hkzlab.rosim.loader.exceptions.RIsiMBoardException;
 import info.hkzlab.rosim.loader.utilities.BitUtils;
 
 public class DuPALCmdInterface {
@@ -24,17 +24,17 @@ public class DuPALCmdInterface {
     }
 
     public void reset() {
-        dpm.writeCommand(DuPALProto.buildRESETCommand());
+        dpm.writeCommand(ROsiMProto.buildRESETCommand());
     }
 
     public int read() {
-        dpm.writeCommand(DuPALProto.buildREADCommand());
-        return DuPALProto.handleREADResponse(dpm.readResponse());
+        dpm.writeCommand(ROsiMProto.buildREADCommand());
+        return ROsiMProto.handleREADResponse(dpm.readResponse());
     }
 
     public int getBoardVersion() {
-        dpm.writeCommand(DuPALProto.buildMODELCommand());
-        return DuPALProto.handleMODELResponse(dpm.readResponse());
+        dpm.writeCommand(ROsiMProto.buildMODELCommand());
+        return ROsiMProto.handleMODELResponse(dpm.readResponse());
     }
     
     public boolean setLED(DuPAL_LED led, boolean enabled) {
@@ -49,24 +49,24 @@ public class DuPALCmdInterface {
                 break;
         }
 
-        dpm.writeCommand(DuPALProto.buildLEDCommand(led_status));
-        return (DuPALProto.handleLEDResponse(dpm.readResponse()) == led_status);
+        dpm.writeCommand(ROsiMProto.buildLEDCommand(led_status));
+        return (ROsiMProto.handleLEDResponse(dpm.readResponse()) == led_status);
     }
 
-    public int write(int data) throws DuPALBoardException {
+    public int write(int data) throws RIsiMBoardException {
         int res;
-        dpm.writeCommand(DuPALProto.buildWRITECommand(data));
-        res = DuPALProto.handleWRITEResponse(dpm.readResponse());
+        dpm.writeCommand(ROsiMProto.buildWRITECommand(data));
+        res = ROsiMProto.handleWRITEResponse(dpm.readResponse());
 
         if(res < 0) {
             logger.error("write("+String.format("%08X", data)+") -> FAILED!");
-            throw new DuPALBoardException("write("+String.format("%08X", data)+") command failed!");
+            throw new RIsiMBoardException("write("+String.format("%08X", data)+") command failed!");
         }
 
         return res;
     }
 
-    public void writeAndPulseClock(int data) throws DuPALBoardException {
+    public void writeAndPulseClock(int data) throws RIsiMBoardException {
         int data_clk = data | palSpecs.getMask_CLK();
         int data_noclk = data & ~palSpecs.getMask_CLK();
 
@@ -74,7 +74,7 @@ public class DuPALCmdInterface {
             write(data_noclk);
             write(data_clk);
             write(data_noclk);
-        } catch(DuPALBoardException e) {
+        } catch(RIsiMBoardException e) {
             logger.error("Pulsing clock to insert data " + String.format("%06X", data) + " failed.");
             throw e;
         }

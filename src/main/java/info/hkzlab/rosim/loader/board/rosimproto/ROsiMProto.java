@@ -1,33 +1,36 @@
-package info.hkzlab.rosim.loader.board.dupalproto;
+package info.hkzlab.rosim.loader.board.rosimproto;
 
 import java.util.ArrayList;
 
-public class DuPALProto {
+public class ROsiMProto {
     private final static String CMD_START = ">";
     private final static String CMD_END = "<";
    
     private final static String RESP_START = "[";
     private final static String RESP_END = "]";
+    
+    private final static String COMMENT_START = "#";
 
+    private final static char CMD_RESET = 'K';
+    private final static char CMD_MODEL = 'M';
+
+    private final static char CMD_DEFAULT = 'D';
+    private final static char CMD_VIEW = 'V';
+    //private final static char CMD_TEST = 'T';
+    
     private final static char CMD_WRITE = 'W';
     private final static char CMD_READ = 'R';
-    private final static char CMD_MODEL = 'M';
-    private final static char CMD_LED = 'L';
-    private final static char CMD_EXIT = 'X';
-    private final static char CMD_RESET = 'K';
+    private final static char CMD_ADDRESS = 'A';
+    private final static char CMD_ADRINCR = 'I';
+    
+    private final static char CMD_ERST = 'E';
+    private final static char CMD_IOSW = 'S';
+    private final static char CMD_RWSW = 'X';
 
     private final static String CMD_RESP_ERROR = "CMD_ERROR";
 
-    public static String buildMODELCommand() {
-        return CMD_START+CMD_MODEL+CMD_END;
-    }
-
-    public static String buildREADCommand() {
-        return CMD_START+CMD_READ+CMD_END;
-    }
-
-    public static String buildLEDCommand(int status) {
-        return ""+CMD_START+CMD_LED+" "+String.format("%02X", status & 0xFF)+CMD_END;
+    public static boolean isStringComment(String str) {
+        return str.trim().startsWith(COMMENT_START);
     }
 
     public static boolean isStringResponseCommand(String cmd) {
@@ -35,31 +38,50 @@ public class DuPALProto {
         return cmd.startsWith(RESP_START) && cmd.endsWith(RESP_END);
     }
 
-    /**
-     * The command will toggle the following pins on the DuPAL, from LSB to MSB
-     * 1, 2, 3, 4, 5, 6, 7, 8, 9, 11 (these are connected directly to the PAL)
-     * 18, 17, 16, 15, 14, 13, 19, 12 (these are connected to the pin through a 10k resistor, acting as pulls)
-     * @param address the combination of output to compose on the DuPAL
-     * @return The generated command
-     */
-    public static String buildWRITECommand(final int address) {
-        return ""+CMD_START+CMD_WRITE+" "+String.format("%08X", address & 0x3FFFF)+CMD_END;
+    public static String buildMODELCommand() {
+        return CMD_START+CMD_MODEL+CMD_END;
+    }
+    
+    public static String buildADRINCRCommand() {
+        return CMD_START+CMD_ADRINCR+CMD_END;
+    }
+    
+    public static String buildDEFAULTCommand() {
+        return CMD_START+CMD_DEFAULT+CMD_END;
+    }
+    
+    public static String buildVIEWCommand() {
+        return CMD_START+CMD_VIEW+CMD_END;
     }
 
-    public static String buildEXITCommand() {
-        return ""+CMD_START+CMD_EXIT+CMD_END;
+    public static String buildREADCommand() {
+        return CMD_START+CMD_READ+CMD_END;
+    }
+
+    public static String buildERSTCommand(final boolean reset) {
+        return ""+CMD_START+CMD_ERST+" "+(reset ? '1':'0')+CMD_END;
+    }
+
+    public static String buildRWSWCommand(final boolean rw) {
+        return ""+CMD_START+CMD_RWSW+" "+(rw ? '1':'0')+CMD_END;
+    }
+
+    public static String buildIOSWCommand(final boolean io) {
+        return ""+CMD_START+CMD_IOSW+" "+(io ? '1':'0')+CMD_END;
+    }
+
+    public static String buildWRITECommand(final int data) {
+        return ""+CMD_START+CMD_WRITE+" "+String.format("%04X", data & 0xFFFF)+CMD_END;
+    }
+    
+    public static String buildADDRESSCommand(final int address) {
+        return ""+CMD_START+CMD_ADDRESS+" "+String.format("%08X", address & 0x7FFFF)+CMD_END;
     }
 
     public static String buildRESETCommand() {
         return ""+CMD_START+CMD_RESET+CMD_END;
     }
 
-    /**
-     * This method returns the status of the PINs of the device inserted in the DuPAL, in this order, from LSB to MSB:
-     * 18, 17, 16, 15, 14, 13, 19, 12
-     * @param response String containing the response received by the DuPAL
-     * @return Returns an integer containing the state of the PAL pins
-     */
     public static int handleREADResponse(final String response) {
         return handleByteResponse(response, CMD_READ);
     }
@@ -78,10 +100,6 @@ public class DuPALProto {
 
     public static int handleMODELResponse(final String response) {
         return handleByteResponse(response, CMD_MODEL);
-    }
-    
-    public static int handleLEDResponse(final String response) {
-        return handleByteResponse(response, CMD_LED);
     }
 
     public static int handleWRITEResponse(final String response) {
@@ -108,7 +126,6 @@ public class DuPALProto {
             response = response.substring(1, response.length()-1).trim();
             char command = response.charAt(0);
             switch(command) {
-                case CMD_LED:
                 case CMD_MODEL:
                 case CMD_READ: 
                 case CMD_WRITE: {
