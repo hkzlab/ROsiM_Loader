@@ -143,6 +143,10 @@ public class ROsiMProto {
         return handleNumericResponse(response, CMD_RWSW);
     } 
 
+    public static int handleERSTResponse(final String response) {
+        return handleNumericResponse(response, CMD_ERST);
+    } 
+
     public static String[] handleVIEWResponse(final String response) {
         return handleMultiStringResponse(response, 3, CMD_VIEW);
     }

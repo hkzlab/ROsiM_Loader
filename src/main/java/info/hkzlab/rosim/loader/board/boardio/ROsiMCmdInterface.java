@@ -75,4 +75,20 @@ public class ROsiMCmdInterface {
 
         return res;
     }
+
+    public boolean switchRW(boolean rw) throws ROsiMBoardException, ROsiMProtoException {
+        dpm.writeCommand(ROsiMProto.buildRWSWCommand(rw));
+        int res = ROsiMProto.handleRWSWResponse(dpm.readResponse());
+
+        if(res < 0) {
+            logger.error("switchRW() -> FAILED!");
+            throw new ROsiMBoardException("switchRW() command failed!");
+        }
+
+        return res == 1;
+    }
+
+    public boolean switchIntExt(boolean ext) {
+        return false;
+    }
 }
