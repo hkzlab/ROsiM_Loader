@@ -55,7 +55,6 @@ public class ROsiMUploader {
         logger.info("Read the file, preparing for upload.");
 
         try {
-            rsci.setDefaults();
             rsci.switchIO(true);
        
             switch(fType) {

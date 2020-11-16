@@ -48,11 +48,7 @@ public class ROsiMManager {
         if (serport != null && serport.isOpened()) {
             try {
                 serport.setDTR(true);
-                try {
-                    Thread.sleep(1000);
-                } catch (final InterruptedException e) {
-                }
-                ;
+                try { Thread.sleep(1000); } catch (final InterruptedException e) {};
                 serport.setDTR(false);
             } catch (final SerialPortException e) {
                 e.printStackTrace();

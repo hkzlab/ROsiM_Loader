@@ -44,6 +44,7 @@ public class App {
             }
         });
 
+        rsci.setDefaults();
         rsci.extReset(true); // Enable the external reset
 
         if(ROsiMUploader.upload(rsci, inFile, fType)) {
