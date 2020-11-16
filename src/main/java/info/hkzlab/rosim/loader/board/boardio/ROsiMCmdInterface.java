@@ -76,8 +76,8 @@ public class ROsiMCmdInterface {
         return res;
     }
 
-    public boolean switchRW(boolean rw) throws ROsiMBoardException, ROsiMProtoException {
-        rsm.writeCommand(ROsiMProto.buildRWSWCommand(rw));
+    public boolean switchRW(boolean read) throws ROsiMBoardException, ROsiMProtoException {
+        rsm.writeCommand(ROsiMProto.buildRWSWCommand(read));
         int res = ROsiMProto.handleRWSWResponse(rsm.readResponse());
 
         if(res < 0) {

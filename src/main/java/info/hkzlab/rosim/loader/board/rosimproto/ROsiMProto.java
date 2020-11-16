@@ -78,12 +78,12 @@ public class ROsiMProto {
         return ""+CMD_START+CMD_ERST+" "+(reset ? '1':'0')+CMD_END;
     }
 
-    public static String buildRWSWCommand(final boolean rw) {
-        return ""+CMD_START+CMD_RWSW+" "+(rw ? '1':'0')+CMD_END;
+    public static String buildRWSWCommand(final boolean read) {
+        return ""+CMD_START+CMD_RWSW+" "+(read ? '1':'0')+CMD_END;
     }
 
-    public static String buildIOSWCommand(final boolean io) {
-        return ""+CMD_START+CMD_IOSW+" "+(io ? '1':'0')+CMD_END;
+    public static String buildIOSWCommand(final boolean internal) {
+        return ""+CMD_START+CMD_IOSW+" "+(internal ? '1':'0')+CMD_END;
     }
 
     public static String buildWRITECommand(final int data) {
