@@ -73,6 +73,7 @@ public class ROsiMUploader {
                     break;
             }
             
+            logger.info("Switching to external I/O!");
             rsci.switchIO(false);
         } catch (ROsiMBoardException | ROsiMProtoException e) {
             e.printStackTrace();
