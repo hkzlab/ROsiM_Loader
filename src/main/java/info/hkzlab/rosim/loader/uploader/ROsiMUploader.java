@@ -89,10 +89,7 @@ public class ROsiMUploader {
 
         logger.info("uploadBinary8 -> Started upload!");
 
-        for(int idx = 0; idx < buf.length; idx++) {
-            rsci.write(buf[idx] & 0xFF);
-            rsci.addressIncrement();
-        }
+        for(int idx = 0; idx < buf.length; idx++) rsci.write(buf[idx] & 0xFF);
 
         logger.info("uploadBinary8 -> Started verification!");
 
@@ -105,8 +102,6 @@ public class ROsiMUploader {
                 logger.error("uploadBinary8 -> Failed verification at address " + String.format("%08X", idx) + " E:"+String.format("%02X", data)+" A:"+String.format("%02X", (buf[idx] & 0xFF)));
                 return false;
             }
-
-            rsci.addressIncrement();
         }
 
         logger.info("uploadBinary8 -> Done!");
@@ -129,7 +124,6 @@ public class ROsiMUploader {
             for(int idx = 0; idx < buf.length; idx+=2) {
                 if(swap) rsci.write((buf[idx+1] & 0xFF) | ((buf[idx] & 0xFF) << 8));
                 else rsci.write((buf[idx] & 0xFF) | ((buf[idx+1] & 0xFF) << 8));
-                rsci.addressIncrement();
             }
     
             logger.info("uploadBinary16 -> Started verification!");
@@ -148,8 +142,6 @@ public class ROsiMUploader {
                     logger.error("uploadBinary16 -> Failed verification at address " + String.format("%08X", idx) + " E:"+String.format("%04X", data)+" A:"+String.format("%04X", expected));
                     return false;
                 }
-    
-                rsci.addressIncrement();
             }
     
             logger.info("uploadBinary16 -> Done!");

@@ -21,7 +21,6 @@ public class ROsiMProto {
     private final static char CMD_WRITE = 'W';
     private final static char CMD_READ = 'R';
     private final static char CMD_ADDRESS = 'A';
-    private final static char CMD_ADRINCR = 'I';
     
     private final static char CMD_ERST = 'E';
     private final static char CMD_IOSW = 'S';
@@ -52,10 +51,6 @@ public class ROsiMProto {
 
     public static String buildMODELCommand() {
         return CMD_START+CMD_MODEL+CMD_END;
-    }
-    
-    public static String buildADRINCRCommand() {
-        return CMD_START+CMD_ADRINCR+CMD_END;
     }
     
     public static String buildDEFAULTCommand() {
@@ -159,10 +154,6 @@ public class ROsiMProto {
         return handleNumericResponse(response, CMD_ADDRESS);
     }
 
-    public static int handleADRINCRResponse(final String response) {
-        return handleNumericResponse(response, CMD_ADRINCR);
-    }
-
     public static String[] parseResponse(String response) {
         if(response == null) return null;
 
@@ -186,7 +177,6 @@ public class ROsiMProto {
                 case CMD_IOSW:
                 case CMD_READ:
                 case CMD_ADDRESS:
-                case CMD_ADRINCR:
                 case CMD_WRITE: {
                         if(cmd_comp.length != 2) return null;
                         return cmd_comp;

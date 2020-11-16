@@ -64,18 +64,6 @@ public class ROsiMCmdInterface {
         return res;
     }
 
-    public int addressIncrement() throws ROsiMBoardException, ROsiMProtoException {
-        rsm.writeCommand(ROsiMProto.buildADRINCRCommand());
-        int res = ROsiMProto.handleADRINCRResponse(rsm.readResponse());
-
-        if(res < 0) {
-            logger.error("addressIncrement() -> FAILED!");
-            throw new ROsiMBoardException("addressIncrement() command failed!");
-        }
-
-        return res;
-    }
-
     public boolean switchRW(boolean read) throws ROsiMBoardException, ROsiMProtoException {
         rsm.writeCommand(ROsiMProto.buildRWSWCommand(read));
         int res = ROsiMProto.handleRWSWResponse(rsm.readResponse());
