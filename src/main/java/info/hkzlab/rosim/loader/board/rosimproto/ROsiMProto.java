@@ -16,7 +16,7 @@ public class ROsiMProto {
 
     private final static char CMD_DEFAULT = 'D';
     private final static char CMD_VIEW = 'V';
-    //private final static char CMD_TEST = 'T';
+    private final static char CMD_TEST = 'T';
     
     private final static char CMD_WRITE = 'W';
     private final static char CMD_READ = 'R';
@@ -30,7 +30,8 @@ public class ROsiMProto {
     private final static String CMD_RESP_ERROR = "CMD_ERROR";
 
     public static boolean isStringComment(String str) {
-        return str.trim().startsWith(COMMENT_START);
+        str = str.trim();
+        return str.startsWith(COMMENT_START) && str.endsWith("\n");
     }
 
     public static boolean isStringResponseCommand(String cmd) {
@@ -48,6 +49,10 @@ public class ROsiMProto {
     
     public static String buildDEFAULTCommand() {
         return CMD_START+CMD_DEFAULT+CMD_END;
+    }
+    
+    public static String buildTESTCommand() {
+        return CMD_START+CMD_TEST+CMD_END;
     }
     
     public static String buildVIEWCommand() {
@@ -105,6 +110,10 @@ public class ROsiMProto {
 
     public static int handleMODELResponse(final String response) {
         return handleNumericResponse(response, CMD_MODEL);
+    }
+
+    public static int handleTESTResponse(final String response) {
+        return handleNumericResponse(response, CMD_TEST);
     }
 
     public static int handleWRITEResponse(final String response) {

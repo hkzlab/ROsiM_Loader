@@ -13,24 +13,21 @@ public class App {
     private final static String version = App.class.getPackage().getImplementationVersion();
 
     private static String serialDevice = null;
-    private static int outMask = -1;
-    private static String outFile = null;
+    private static String inFile = null;
 
     public static void main(String[] args) throws Exception {
         logger.info("ROsiM Loader " + version);
 
         if (args.length < 3) {
-            logger.error("Wrong number of arguments passed.\n"
-                    + "dupal_analyzer <serial_port> <pal_type> <output_file> [hex_output_mask]\n"
-                    + "Where <pal_type> can be:\n" + supportedPALs.toString() + "\n");
+            logger.error("Wrong number of arguments passed.\n");
 
             return;
         }
 
         parseArgs(args);
 
-        DuPALManager dpm = new DuPALManager(serialDevice);
-        DuPALCmdInterface dpci = new DuPALCmdInterface(dpm, pspecs);
+        ROsiMManager dpm = new ROsiMManager(serialDevice);
+        ROsiMCmdInterface dpci = new ROsiMCmdInterface(dpm);
 
         if (!dpm.enterRemoteMode()) {
             logger.error("Unable to put DuPAL board in REMOTE MODE!");
@@ -47,38 +44,29 @@ public class App {
 
     private static void parseArgs(String[] args) {
         serialDevice = args[0];
-
-        try {
-            Class<?> specsClass = Class.forName("info.hkzlab.dupal.analyzer.devices.PAL" + args[1].toUpperCase() + "Specs");
-            pspecs = (PALSpecs) specsClass.getConstructor().newInstance(new Object[]{});
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-            logger.error("Invalid PAL type selected.");
-            System.exit(-1);
-        }
-
-        outFile = args[2];
-
-        if(args.length >= 4) {
-            outMask = Integer.parseInt(args[3], 16);
-        }
-
-        checkOutPath(outFile);
+        inFile = args[1];
+        checkFilePath(inFile);
     }
 
-    private static void checkOutPath(String path) {
+    private static void checkFilePath(String path) {
         File file = new File(path);
 
         boolean exists = file.exists();
         boolean isDirectory = file.isDirectory();
+        boolean isReadable = file.canRead();
 
         if(isDirectory) {
-            logger.error("Output path " + path + " points to a directory, please specify an output file!");
+            logger.error("Input path " + path + " points to a directory, please specify an input file!");
             System.exit(-1);
         }
 
-        if(exists) {
-            logger.error("Output path " + path + " points to an existing file. We're not going to overwrite it!");
+        if(!exists) {
+            logger.error("Input path " + path + " does not point to an existing file!");
+            System.exit(-1);
+        }
+
+        if(!isReadable) {
+            logger.error("Input file " + path + " is not readable!");
             System.exit(-1);
         }
     }

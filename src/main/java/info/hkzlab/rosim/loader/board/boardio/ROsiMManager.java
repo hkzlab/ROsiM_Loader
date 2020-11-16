@@ -12,15 +12,15 @@ import jssc.SerialPort;
 import jssc.SerialPortException;
 import jssc.SerialPortTimeoutException;
 
-public class DuPALManager {
-    private final Logger logger = LoggerFactory.getLogger(DuPALManager.class);
+public class ROsiMManager {
+    private final Logger logger = LoggerFactory.getLogger(ROsiMManager.class);
 
     private SerialPort serport = null;
 
     private final static int SERIAL_READ_RETRIES = 20;
     private final static String REMOTE_MODE_STRING = "REMOTE_CONTROL_ENABLED";
 
-    public DuPALManager(final String serPort) {
+    public ROsiMManager(final String serPort) {
         serport = new SerialPort(serPort);
 
         try {
@@ -32,7 +32,7 @@ public class DuPALManager {
 
         if (serport != null) {
             try {
-                serport.setParams(BAUDRATE_57600, DATABITS_8, STOPBITS_1, PARITY_NONE);
+                serport.setParams(BAUDRATE_115200, DATABITS_8, STOPBITS_1, PARITY_NONE);
             } catch (final SerialPortException e) {
                 e.printStackTrace();
                 try {
@@ -94,6 +94,10 @@ public class DuPALManager {
                         respBuf.append(resp);
                         retries = SERIAL_READ_RETRIES; // Reset the retries counter
                         if(ROsiMProto.isStringResponseCommand(respBuf.toString())) break; // If we end with a character that could terminate the response, exit from here
+                        else if (ROsiMProto.isStringComment(respBuf.toString())) {
+                            respBuf.delete(0, respBuf.length());
+                            continue;
+                        }
                     }
                 }
 
