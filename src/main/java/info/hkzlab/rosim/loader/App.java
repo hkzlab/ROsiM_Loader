@@ -52,7 +52,10 @@ public class App {
             rsci.extReset(false);
 
             // Enter into a forever loop
-            while(true) Thread.sleep(5000);
+            while(true) { 
+                Thread.sleep(1000);
+                rsci.viewState(); // Periodically check on the board
+            }
         }
     }
 

@@ -111,4 +111,16 @@ public class ROsiMCmdInterface {
 
         return res == 0;
     }
+
+    public String[] viewState() throws ROsiMProtoException, ROsiMBoardException {
+        rsm.writeCommand(ROsiMProto.buildVIEWCommand());
+        String[] res = ROsiMProto.handleVIEWResponse(rsm.readResponse());
+
+        if(res == null) {
+            logger.error("viewState() -> FAILED!");
+            throw new ROsiMBoardException("viewState() command failed!");
+        }
+
+        return res;
+    }
 }
