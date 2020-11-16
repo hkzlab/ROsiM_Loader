@@ -10,27 +10,27 @@ import info.hkzlab.rosim.loader.exceptions.ROsiMProtoException;
 public class ROsiMCmdInterface {
     private static final Logger logger = LoggerFactory.getLogger(ROsiMCmdInterface.class);
 
-    private final ROsiMManager dpm;
+    private final ROsiMManager rsm;
 
-    public ROsiMCmdInterface(ROsiMManager dpm) {
-        this.dpm = dpm;
+    public ROsiMCmdInterface(ROsiMManager rsm) {
+        this.rsm = rsm;
     }
 
     public void resetBoard() {
-        dpm.writeCommand(ROsiMProto.buildRESETCommand());
+        rsm.writeCommand(ROsiMProto.buildRESETCommand());
     }
 
     public void setDefaults() throws ROsiMBoardException, ROsiMProtoException {
-        dpm.writeCommand(ROsiMProto.buildDEFAULTCommand());
-        if(!ROsiMProto.handleDEFAULTResponse(dpm.readResponse())) {
+        rsm.writeCommand(ROsiMProto.buildDEFAULTCommand());
+        if(!ROsiMProto.handleDEFAULTResponse(rsm.readResponse())) {
             logger.error("setDefaults() -> FAILED!");
             throw new ROsiMBoardException("setDefaults() command failed!");            
         }
     }
 
     public int write(int data) throws ROsiMBoardException, ROsiMProtoException {
-        dpm.writeCommand(ROsiMProto.buildWRITECommand(data));
-        int res = ROsiMProto.handleWRITEResponse(dpm.readResponse());
+        rsm.writeCommand(ROsiMProto.buildWRITECommand(data));
+        int res = ROsiMProto.handleWRITEResponse(rsm.readResponse());
 
         if(res < 0) {
             logger.error("write("+String.format("%04X", data)+") -> FAILED!");
@@ -41,8 +41,8 @@ public class ROsiMCmdInterface {
     }
 
     public int read() throws ROsiMBoardException, ROsiMProtoException {
-        dpm.writeCommand(ROsiMProto.buildREADCommand());
-        int res = ROsiMProto.handleREADResponse(dpm.readResponse());
+        rsm.writeCommand(ROsiMProto.buildREADCommand());
+        int res = ROsiMProto.handleREADResponse(rsm.readResponse());
 
         if(res < 0) {
             logger.error("read() -> FAILED!");
@@ -53,8 +53,8 @@ public class ROsiMCmdInterface {
     }
 
     public int address(int address) throws ROsiMBoardException, ROsiMProtoException {
-        dpm.writeCommand(ROsiMProto.buildADDRESSCommand(address));
-        int res = ROsiMProto.handleADDRESSResponse(dpm.readResponse());
+        rsm.writeCommand(ROsiMProto.buildADDRESSCommand(address));
+        int res = ROsiMProto.handleADDRESSResponse(rsm.readResponse());
 
         if(res < 0) {
             logger.error("address() -> FAILED!");
@@ -65,8 +65,8 @@ public class ROsiMCmdInterface {
     }
 
     public int addressIncrement() throws ROsiMBoardException, ROsiMProtoException {
-        dpm.writeCommand(ROsiMProto.buildADRINCRCommand());
-        int res = ROsiMProto.handleADRINCRResponse(dpm.readResponse());
+        rsm.writeCommand(ROsiMProto.buildADRINCRCommand());
+        int res = ROsiMProto.handleADRINCRResponse(rsm.readResponse());
 
         if(res < 0) {
             logger.error("addressIncrement() -> FAILED!");
@@ -77,18 +77,26 @@ public class ROsiMCmdInterface {
     }
 
     public boolean switchRW(boolean rw) throws ROsiMBoardException, ROsiMProtoException {
-        dpm.writeCommand(ROsiMProto.buildRWSWCommand(rw));
-        int res = ROsiMProto.handleRWSWResponse(dpm.readResponse());
+        rsm.writeCommand(ROsiMProto.buildRWSWCommand(rw));
+        int res = ROsiMProto.handleRWSWResponse(rsm.readResponse());
 
         if(res < 0) {
             logger.error("switchRW() -> FAILED!");
             throw new ROsiMBoardException("switchRW() command failed!");
         }
 
-        return res == 1;
+        return res != 0;
     }
 
-    public boolean switchIntExt(boolean ext) {
-        return false;
+    public boolean switchIO(boolean internal) throws ROsiMProtoException, ROsiMBoardException {
+        rsm.writeCommand(ROsiMProto.buildIOSWCommand(internal));
+        int res = ROsiMProto.handleIOSWResponse(rsm.readResponse());
+
+        if(res < 0) {
+            logger.error("switchIO() -> FAILED!");
+            throw new ROsiMBoardException("switchIO() command failed!");
+        }
+
+        return res != 0;
     }
 }
