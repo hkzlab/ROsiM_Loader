@@ -42,11 +42,35 @@ public class ROsiMCmdInterface {
 
     public int read() throws ROsiMBoardException, ROsiMProtoException {
         dpm.writeCommand(ROsiMProto.buildREADCommand());
-        int res = ROsiMProto.handleWRITEResponse(dpm.readResponse());
+        int res = ROsiMProto.handleREADResponse(dpm.readResponse());
 
         if(res < 0) {
             logger.error("read() -> FAILED!");
             throw new ROsiMBoardException("read() command failed!");
+        }
+
+        return res;
+    }
+
+    public int address(int address) throws ROsiMBoardException, ROsiMProtoException {
+        dpm.writeCommand(ROsiMProto.buildADDRESSCommand(address));
+        int res = ROsiMProto.handleADDRESSResponse(dpm.readResponse());
+
+        if(res < 0) {
+            logger.error("address() -> FAILED!");
+            throw new ROsiMBoardException("address() command failed!");
+        }
+
+        return res;
+    }
+
+    public int addressIncrement() throws ROsiMBoardException, ROsiMProtoException {
+        dpm.writeCommand(ROsiMProto.buildADRINCRCommand());
+        int res = ROsiMProto.handleADRINCRResponse(dpm.readResponse());
+
+        if(res < 0) {
+            logger.error("addressIncrement() -> FAILED!");
+            throw new ROsiMBoardException("addressIncrement() command failed!");
         }
 
         return res;

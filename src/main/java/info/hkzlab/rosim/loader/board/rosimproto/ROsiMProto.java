@@ -131,15 +131,15 @@ public class ROsiMProto {
         return handleNumericResponse(response, CMD_WRITE);
     }
 
-    public static int handleREADesponse(final String response) {
+    public static int handleREADResponse(final String response) {
         return handleNumericResponse(response, CMD_READ);
     }
     
-    public static int handleRWSWesponse(final String response) {
+    public static int handleRWSWResponse(final String response) {
         return handleNumericResponse(response, CMD_RWSW);
     } 
 
-    public static int handleIOSWesponse(final String response) {
+    public static int handleIOSWResponse(final String response) {
         return handleNumericResponse(response, CMD_RWSW);
     } 
 
