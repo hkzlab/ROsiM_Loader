@@ -17,7 +17,7 @@ public class XModemSender {
     private static int XModem_SOH = 0x01;
     private static int XModem_EOT = 0x04;
     private static int XModem_ACK = 0x06;
-    private static int XModem_NACK = 0x15;
+    //private static int XModem_NACK = 0x15;
     private static int XModem_C = 0x43;
 
     private XModemSender() {
