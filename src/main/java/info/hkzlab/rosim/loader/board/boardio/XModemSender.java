@@ -78,18 +78,21 @@ public class XModemSender {
                     cur_pkt++; 
                     retries = XMODEM_RETRIES;
                 } else { 
-                    logger.error("XMODEM upload() -> Failed transmission for " + cur_pkt + ". Retries left: " + retries);
+                    logger.error("XMODEM upload() -> Failed transmission for " + cur_pkt + ". Retries left: " + (retries-1));
                     retries--;
                     continue; 
                 }
             }
 
-            logger.info("XMODEM upload() -> Transmission done, sending EOT");
-            
-            do {
-                port.writeByte((byte)XModem_EOT);
-                retries--;
-            } while(!waitACK(port) && (retries > 0));
+            if(retries > 0) {
+                logger.info("XMODEM upload() -> Transmission done, sending EOT");
+                retries = XMODEM_RETRIES;
+
+                do {
+                    port.writeByte((byte)XModem_EOT);
+                    retries--;
+                } while(!waitACK(port) && (retries > 0));
+            }
 
             if(retries > 0) return true;
         } catch (SerialPortException e) {
