@@ -32,8 +32,9 @@ Where `<serial port>` is the serial device on Linux (e.g. `/dev/ttyUSB0`) or the
 
 ## Upload procedure
 
-Once the upload starts, the board will enable its external RESET line, you should connect this to the reset line of your target board.
+Once the upload starts, the board will assert its external RESET line. This line is meant to be connected to the reset circuitry of the target board.
 
-While the upload is ongoing, the internal SRAMs are disconnected from the target's circuit, they will be connected only after the upload completes, immediately followed by the RESET line being disabled.
+While the upload is ongoing the SRAMs are isolated from the target's circuitrey, they will be connected only after the upload completes, immediately followed by the RESET line being disabled.
 
-Once the upload completes and the RESET line is disabled, the program will remain running, periodically pinging the ROSiM board to check the connection. If the user wishes to quit, press CTRL-C and the board will be reset to defaults and disconnected.
+Once the upload completes and the RESET line is deasserted, the program will remain running, periodically pinging the ROSiM board to check the connection. 
+If the user wishes to quit, press CTRL-C and the board will be reset to defaults and disconnected.
