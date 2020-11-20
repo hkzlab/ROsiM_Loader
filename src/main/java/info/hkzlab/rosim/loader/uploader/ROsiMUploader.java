@@ -13,7 +13,7 @@ import info.hkzlab.rosim.loader.exceptions.ROsiMProtoException;
 
 public class ROsiMUploader {
     public static enum FileType {
-        BIN_8, BIN_16, BIN_16_S // hi-lo bytes swapped
+        BIN_8, BIN_16, BIN_16S // hi-lo bytes swapped
     };
 
     private final static Logger logger = LoggerFactory.getLogger(ROsiMUploader.class);
@@ -27,7 +27,7 @@ public class ROsiMUploader {
         switch (fType) {
             case BIN_8:
             case BIN_16:
-            case BIN_16_S:
+            case BIN_16S:
                 return uploadBinary(rsci, filePath, fType);
             default:
                 return false;
@@ -64,7 +64,7 @@ public class ROsiMUploader {
                 case BIN_16:
                     result = rsci.uploadBuffer(fileBuffer, 1);
                     break;
-                case BIN_16_S:
+                case BIN_16S:
                     result = rsci.uploadBuffer(fileBuffer, 2);
                     break;
                 default:

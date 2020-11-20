@@ -96,7 +96,7 @@ public class ROsiMProto {
     }
 
     public static String buildXMODEMCommand(final int type) {
-        return ""+CMD_START+CMD_XMODEM+" "+String.format("%02X", type)+CMD_END;
+        return ""+CMD_START+CMD_XMODEM+" "+String.format("%01X", type)+CMD_END;
     }
 
     public static int handleNumericResponse(final String response, final char expectedCmd) {
