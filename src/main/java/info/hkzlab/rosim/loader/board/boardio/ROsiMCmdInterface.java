@@ -115,7 +115,7 @@ public class ROsiMCmdInterface {
     public boolean uploadBuffer(final byte[] buffer, final int type) throws ROsiMProtoException, ROsiMBoardException {
         rsm.writeCommand(ROsiMProto.buildXMODEMCommand(type));
 
-        // TODO: XMODEM upload
+        if(!XModemSender.upload(rsm.getSerialPort(), buffer)) return false;
 
         return ROsiMProto.handleXMODEMResponse(rsm.readResponse());
     }
