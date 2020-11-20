@@ -54,6 +54,8 @@ public class App {
             logger.info("Upload completed, disabling the external reset!");
             rsci.extReset(false);
 
+            logger.info("Press CTRL-C to quit the program and reset the board.");
+
             // Enter into a forever loop
             while(true) { 
                 Thread.sleep(1000);

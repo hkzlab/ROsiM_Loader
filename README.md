@@ -36,3 +36,4 @@ Once the upload starts, the board will enable its external RESET line, you shoul
 
 While the upload is ongoing, the internal SRAMs are disconnected from the target's circuit, they will be connected only after the upload completes, immediately followed by the RESET line being disabled.
 
+Once the upload completes and the RESET line is disabled, the program will remain running, periodically pinging the ROSiM board to check the connection. If the user wishes to quit, press CTRL-C and the board will be reset to defaults and disconnected.
