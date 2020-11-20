@@ -66,13 +66,13 @@ public class XModemSender {
             int cur_pkt = 0;
             int tot_pkts = (buffer.length / XMODEM_DATA_SIZE) + ((buffer.length % XMODEM_DATA_SIZE) > 0 ? 1 : 0);
             while((cur_pkt < tot_pkts) && (retries > 0)) {
-                logger.info("XMODEM upload() -> trying to send packet " + cur_pkt);
+                logger.info("XMODEM upload() -> Sending packet " + cur_pkt + "/" + (tot_pkts-1));
 
                 retries = 15;
                 byte[] pkt = createPacket(buffer, cur_pkt * 128, cur_pkt);
                 port.writeBytes(pkt);
 
-                if(waitACK()) cur_pkt++;
+                if(waitACK(port)) cur_pkt++;
                 else { retries--; continue; }
             }
 
@@ -81,7 +81,7 @@ public class XModemSender {
             do {
                 port.writeByte((byte)XModem_EOT);
                 retries--;
-            } while(!waitACK() && (retries > 0));
+            } while(!waitACK(port) && (retries > 0));
 
             if(retries > 0) return true;
         } catch (SerialPortException e) {
@@ -91,7 +91,17 @@ public class XModemSender {
         return false;
    }
 
-   private static boolean waitACK() {
-       return false;
+   private static boolean waitACK(SerialPort port) throws SerialPortException {
+        long start = System.currentTimeMillis();
+
+        while((System.currentTimeMillis() - start) < 3_000) { // Wait for 3 seconds for an ack
+            if(port.getInputBufferBytesCount() > 0) {
+                byte[] data = port.readBytes(1);
+                if((data[0] & 0xFF) == XModem_ACK) return true;
+                else return false; // Everything else is not good...
+            } else try { Thread.sleep(1); } catch(InterruptedException e) {};
+        } 
+
+        return false;
    }
 }
