@@ -78,7 +78,7 @@ public class XModemSender {
                     cur_pkt++; 
                     retries = XMODEM_RETRIES;
                 } else { 
-                    logger.error("XMODEM upload() -> Failed transmission for " + cur_pkt + ". Retries left: " + (retries-1));
+                    logger.error("XMODEM upload() -> Failed transmission for packet " + cur_pkt + ". Retries left: " + (retries-1));
                     retries--;
                     continue; 
                 }
