@@ -111,4 +111,12 @@ public class ROsiMCmdInterface {
 
         return res;
     }
+
+    public boolean uploadBuffer(final byte[] buffer, final int type) throws ROsiMProtoException, ROsiMBoardException {
+        rsm.writeCommand(ROsiMProto.buildXMODEMCommand(type));
+
+        // TODO: XMODEM upload
+
+        return ROsiMProto.handleXMODEMResponse(rsm.readResponse());
+    }
 }

@@ -25,6 +25,8 @@ public class ROsiMProto {
     private final static char CMD_ERST = 'E';
     private final static char CMD_IOSW = 'S';
     private final static char CMD_RWSW = 'X';
+    
+    private final static char CMD_XMODEM = 'O';
 
     private final static String CMD_RESP_ERROR = "CMD_ERROR";
 
@@ -93,6 +95,10 @@ public class ROsiMProto {
         return ""+CMD_START+CMD_RESET+CMD_END;
     }
 
+    public static String buildXMODEMCommand(final int type) {
+        return ""+CMD_START+CMD_XMODEM+" "+String.format("%02X", type)+CMD_END;
+    }
+
     public static int handleNumericResponse(final String response, final char expectedCmd) {
         String[] readRes = parseResponse(response);
 
@@ -150,6 +156,10 @@ public class ROsiMProto {
         return (handleMultiStringResponse(response, 1, CMD_DEFAULT) != null);
     }
 
+    public static boolean handleXMODEMResponse(final String response) {
+        return handleNumericResponse(response, CMD_XMODEM) == 1;
+    }
+
     public static int handleADDRESSResponse(final String response) {
         return handleNumericResponse(response, CMD_ADDRESS);
     }
@@ -171,6 +181,7 @@ public class ROsiMProto {
                     if(cmd_comp.length != 1) return null;
                     return cmd_comp;                    
                 }
+                case CMD_XMODEM:
                 case CMD_MODEL:
                 case CMD_RWSW:
                 case CMD_ERST:

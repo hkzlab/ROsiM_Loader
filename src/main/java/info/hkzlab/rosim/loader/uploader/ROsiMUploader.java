@@ -23,18 +23,18 @@ public class ROsiMUploader {
     private ROsiMUploader() {
     };
 
-    static public boolean upload(ROsiMCmdInterface rsci, String filePath, FileType fType, boolean skipVerification) {
+    static public boolean upload(ROsiMCmdInterface rsci, String filePath, FileType fType) {
         switch (fType) {
             case BIN_8:
             case BIN_16:
             case BIN_16_S:
-                return uploadBinary(rsci, filePath, fType, skipVerification);
+                return uploadBinary(rsci, filePath, fType);
             default:
                 return false;
         }
     }
 
-    static private boolean uploadBinary(ROsiMCmdInterface rsci, String filePath, FileType fType, boolean skipVerification) {
+    static private boolean uploadBinary(ROsiMCmdInterface rsci, String filePath, FileType fType) {
         boolean result = true;
         Path fp = Path.of(filePath);
         long fSize;
@@ -59,13 +59,13 @@ public class ROsiMUploader {
        
             switch(fType) {
                 case BIN_8:
-                    result = uploadBinary8(rsci, fileBuffer, skipVerification);
+                    result = rsci.uploadBuffer(fileBuffer, 0);
                     break;
                 case BIN_16:
-                    result = uploadBinary16(rsci, fileBuffer, false, skipVerification);
+                    result = rsci.uploadBuffer(fileBuffer, 1);
                     break;
                 case BIN_16_S:
-                    result = uploadBinary16(rsci, fileBuffer, true, skipVerification);
+                    result = rsci.uploadBuffer(fileBuffer, 2);
                     break;
                 default:
                     result = false;
@@ -80,90 +80,5 @@ public class ROsiMUploader {
         }
 
         return result;
-    }
-
-    private static boolean uploadBinary8(ROsiMCmdInterface rsci, byte[] buf, boolean skipVerification)
-            throws ROsiMProtoException, ROsiMBoardException {
-        int tenpFract = buf.length / 10;
-        
-        rsci.switchRW(false); // Write mode
-        rsci.address(0);
-
-        logger.info("uploadBinary8 -> Started upload!");
-
-        for(int idx = 0; idx < buf.length; idx++) {
-            rsci.write(buf[idx] & 0xFF);
-            
-            if((idx % tenpFract) == 0) logger.info("uploadBinary8 -> " + ((idx/tenpFract)*10) + "% uploaded.");
-        }
-
-        rsci.switchRW(true); // Read mode
-        rsci.address(0);
-
-        if(skipVerification) return true;
-
-        logger.info("uploadBinary8 -> Started verification!");
-
-        for(int idx = 0; idx < buf.length; idx++) {
-            int data = rsci.read();
-            if(data != (buf[idx] & 0xFF)) {
-                logger.error("uploadBinary8 -> Failed verification at address " + String.format("%08X", idx) + " E:"+String.format("%02X", data)+" A:"+String.format("%02X", (buf[idx] & 0xFF)));
-                return false;
-            }
-
-            if((idx % tenpFract) == 0) logger.info("uploadBinary8 -> " + ((idx/tenpFract)*10) + "% verified.");
-        }
-
-        logger.info("uploadBinary8 -> Done!");
-
-        return true;
-    }
-
-    private static boolean uploadBinary16(ROsiMCmdInterface rsci, byte[] buf, boolean swap, boolean skipVerification) 
-        throws ROsiMProtoException, ROsiMBoardException {
-            if((buf.length % 2) > 0) {
-                logger.error("uploadBinary16 -> File contains an odd number of bytes!");
-                return false;
-            }
-        
-            int tenpFract = buf.length / 10;
-
-            rsci.switchRW(false); // Write mode
-            rsci.address(0);
-    
-            logger.info("uploadBinary16 -> Started upload!");
-    
-            for(int idx = 0; idx < buf.length; idx+=2) {
-                if(swap) rsci.write((buf[idx+1] & 0xFF) | ((buf[idx] & 0xFF) << 8));
-                else rsci.write((buf[idx] & 0xFF) | ((buf[idx+1] & 0xFF) << 8));
-            
-                if((idx % tenpFract) == 0) logger.info("uploadBinary16 -> " + ((idx/tenpFract)*10) + "% uploaded.");
-            }
-    
-            rsci.switchRW(true); // Read mode
-            rsci.address(0);
-        
-            if(skipVerification) return true;
-            
-            logger.info("uploadBinary16 -> Started verification!");
-    
-            for(int idx = 0; idx < buf.length; idx+=2) {
-                int data = rsci.read();
-                int expected;
-
-                if(swap) expected = ((buf[idx+1] & 0xFF) | ((buf[idx] & 0xFF) << 8));
-                else expected = ((buf[idx] & 0xFF) | ((buf[idx+1] & 0xFF) << 8));
-
-                if(data != expected) {
-                    logger.error("uploadBinary16 -> Failed verification at address " + String.format("%08X", idx) + " E:"+String.format("%04X", data)+" A:"+String.format("%04X", expected));
-                    return false;
-                }
-                
-                if((idx % tenpFract) == 0) logger.info("uploadBinary16 -> " + ((idx/tenpFract)*10) + "% verified.");
-            }
-    
-            logger.info("uploadBinary16 -> Done!");
-    
-            return true;
     }
 }

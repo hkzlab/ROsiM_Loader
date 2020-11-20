@@ -154,4 +154,8 @@ public class ROsiMManager {
             e.printStackTrace();
         }
     }
+
+    protected SerialPort getSerialPort() {
+        return serport;
+    }
 }

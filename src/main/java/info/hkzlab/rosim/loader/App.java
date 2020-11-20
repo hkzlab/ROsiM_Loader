@@ -15,14 +15,13 @@ public class App {
     private static String serialDevice = null;
     private static String inFile = null;
     private static FileType fType = null;
-    private static boolean skipVerification = false;
 
     public static void main(String[] args) throws Exception {
         logger.info("ROsiM Loader " + version);
 
         if (args.length < 3) {
             logger.error("Wrong number of arguments passed.\n" +
-                         "rosim-loader <serial_device> <input_file> <file_type> [S]\n" +
+                         "rosim-loader <serial_device> <input_file> <file_type>\n" +
                          "If S is specified, the verification phase is skipped!\n\n");
 
             return;
@@ -51,7 +50,7 @@ public class App {
         logger.info("Enabling external reset!");
         rsci.extReset(true); // Enable the external reset
 
-        if(ROsiMUploader.upload(rsci, inFile, fType, skipVerification)) {
+        if(ROsiMUploader.upload(rsci, inFile, fType)) {
             logger.info("Upload completed, disabling the external reset!");
             rsci.extReset(false);
 
@@ -75,8 +74,6 @@ public class App {
         }
 
         checkFilePath(inFile);
-
-        if(args.length >= 4) skipVerification = args[3].equalsIgnoreCase("S");
     }
 
     private static void checkFilePath(String path) {
