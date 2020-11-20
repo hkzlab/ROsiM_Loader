@@ -77,7 +77,7 @@ public class XModemSender {
 
                 if(waitACK(port)) cur_pkt++;
                 else { 
-                    logger.error("XMODEM upload() -> Failed transmission for " + cur_pkt);
+                    logger.error("XMODEM upload() -> Failed transmission for " + cur_pkt + ". Retries left: " + retries);
                     retries--;
                     continue; 
                 }
