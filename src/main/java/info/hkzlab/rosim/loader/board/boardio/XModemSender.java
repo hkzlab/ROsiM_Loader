@@ -58,15 +58,16 @@ public class XModemSender {
    public static boolean upload(SerialPort port, byte[] buffer) {
         int retries = 15;
 
+        int tot_pkts = (buffer.length / XMODEM_DATA_SIZE) + ((buffer.length % XMODEM_DATA_SIZE) > 0 ? 1 : 0);
+
         try {
-            logger.info("XMODEM upload() -> starting");
+            logger.info("XMODEM upload() -> starting upload of " + tot_pkts + " packets!");
             if (!sync(port)) return false;
-            logger.info("XMODEM upload() -> synced");
+            logger.debug("XMODEM upload() -> synced");
 
             int cur_pkt = 0;
-            int tot_pkts = (buffer.length / XMODEM_DATA_SIZE) + ((buffer.length % XMODEM_DATA_SIZE) > 0 ? 1 : 0);
             while((cur_pkt < tot_pkts) && (retries > 0)) {
-                logger.info("XMODEM upload() -> Sending packet " + cur_pkt + "/" + (tot_pkts-1));
+                logger.debug("XMODEM upload() -> Sending packet " + cur_pkt + "/" + (tot_pkts-1));
 
                 retries = 15;
                 byte[] pkt = createPacket(buffer, cur_pkt * 128, cur_pkt);

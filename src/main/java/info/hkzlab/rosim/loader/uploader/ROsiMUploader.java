@@ -54,9 +54,11 @@ public class ROsiMUploader {
 
         logger.info("Read the file, preparing for upload.");
 
+        long start_time = System.currentTimeMillis();
+
         try {
             rsci.switchIO(true);
-       
+            
             switch(fType) {
                 case BIN_8:
                     result = rsci.uploadBuffer(fileBuffer, 0);
@@ -72,8 +74,13 @@ public class ROsiMUploader {
                     break;
             }
             
-            logger.info("Switching to external I/O!");
-            rsci.switchIO(false);
+            if(result) {
+                logger.info("XMODEM upload of " + (fileBuffer.length/1024) + "Kb completed in " + (System.currentTimeMillis()-start_time)/1000 + " seconds.");
+                logger.info("Switching to external I/O!");
+                rsci.switchIO(false);
+            } else {
+                logger.info("XMODEM upload failed.");
+            }
         } catch (ROsiMBoardException | ROsiMProtoException e) {
             e.printStackTrace();
             return false;
