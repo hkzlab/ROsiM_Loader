@@ -74,7 +74,11 @@ public class XModemSender {
                 port.writeBytes(pkt);
 
                 if(waitACK(port)) cur_pkt++;
-                else { retries--; continue; }
+                else { 
+                    logger.error("XMODEM upload() -> Failed transmission for " + cur_pkt);
+                    retries--;
+                    continue; 
+                }
             }
 
             logger.info("XMODEM upload() -> Transmission done, sending EOT");
