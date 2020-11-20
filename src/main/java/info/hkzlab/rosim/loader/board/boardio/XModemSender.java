@@ -12,6 +12,8 @@ import jssc.SerialPortException;
 public class XModemSender {
     private final static Logger logger = LoggerFactory.getLogger(XModemSender.class);
 
+    private static int XMODEM_RETRIES = 15;
+
     private static int XMODEM_DATA_SIZE = 128;
 
     private static int XModem_SOH = 0x01;
@@ -56,7 +58,7 @@ public class XModemSender {
     }
 
    public static boolean upload(SerialPort port, byte[] buffer) {
-        int retries = 15;
+        int retries = XMODEM_RETRIES;
 
         int tot_pkts = (buffer.length / XMODEM_DATA_SIZE) + ((buffer.length % XMODEM_DATA_SIZE) > 0 ? 1 : 0);
 
@@ -69,8 +71,8 @@ public class XModemSender {
             while((cur_pkt < tot_pkts) && (retries > 0)) {
                 logger.debug("XMODEM upload() -> Sending packet " + cur_pkt + "/" + (tot_pkts-1));
 
-                retries = 15;
-                byte[] pkt = createPacket(buffer, cur_pkt * 128, cur_pkt);
+                retries = XMODEM_RETRIES;
+                byte[] pkt = createPacket(buffer, cur_pkt * XMODEM_DATA_SIZE, cur_pkt);
                 port.writeBytes(pkt);
 
                 if(waitACK(port)) cur_pkt++;
