@@ -4,7 +4,15 @@
 
 The ROsiM Loader is the companion application for the [ROsiM ROM simulator](https://github.com/hkzlab/ROsiM) and it's used to upload ROM dumps into the board's memory and automatically control the line drivers.
 
-It's a Maven Java project, and can be used on both Windows and Linux without issues.
+## How to build
+
+It's a Maven Java project, and can be used on both Windows and Linux without issues. If you have Maven and a JDK >= 1.8, it should be sufficient to go in the base directory of this project and run
+
+```sh
+mvn package -f pom.xml
+```
+
+You'll then get your generated JARs in the `target` directory.
 
 ## Command line
 
