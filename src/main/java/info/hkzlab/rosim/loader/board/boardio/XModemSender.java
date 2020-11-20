@@ -71,12 +71,13 @@ public class XModemSender {
             while((cur_pkt < tot_pkts) && (retries > 0)) {
                 logger.debug("XMODEM upload() -> Sending packet " + cur_pkt + "/" + (tot_pkts-1));
 
-                retries = XMODEM_RETRIES;
                 byte[] pkt = createPacket(buffer, cur_pkt * XMODEM_DATA_SIZE, cur_pkt);
                 port.writeBytes(pkt);
 
-                if(waitACK(port)) cur_pkt++;
-                else { 
+                if(waitACK(port)) { 
+                    cur_pkt++; 
+                    retries = XMODEM_RETRIES;
+                } else { 
                     logger.error("XMODEM upload() -> Failed transmission for " + cur_pkt + ". Retries left: " + retries);
                     retries--;
                     continue; 
