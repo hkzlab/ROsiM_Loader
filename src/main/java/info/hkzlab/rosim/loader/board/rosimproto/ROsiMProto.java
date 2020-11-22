@@ -25,6 +25,7 @@ public class ROsiMProto {
     private final static char CMD_ERST = 'E';
     private final static char CMD_IOSW = 'S';
     private final static char CMD_RWSW = 'X';
+    private final static char CMD_RSTINV = 'I';
     
     private final static char CMD_XMODEM = 'O';
 
@@ -72,7 +73,11 @@ public class ROsiMProto {
     }
 
     public static String buildERSTCommand(final boolean reset) {
-        return ""+CMD_START+CMD_ERST+" "+(reset ? '0':'1')+CMD_END;
+        return ""+CMD_START+CMD_ERST+" "+(reset ? '1':'0')+CMD_END;
+    }
+
+    public static String buildRSTINVCommand(final boolean invert) {
+        return ""+CMD_START+CMD_RSTINV+" "+(invert ? '1':'0')+CMD_END;
     }
 
     public static String buildRWSWCommand(final boolean read) {
@@ -148,6 +153,10 @@ public class ROsiMProto {
         return handleNumericResponse(response, CMD_ERST);
     } 
 
+    public static int handleRSTINVResponse(final String response) {
+        return handleNumericResponse(response, CMD_RSTINV);
+    } 
+
     public static String[] handleVIEWResponse(final String response) {
         return handleMultiStringResponse(response, 3, CMD_VIEW);
     }
@@ -185,6 +194,7 @@ public class ROsiMProto {
                 case CMD_MODEL:
                 case CMD_RWSW:
                 case CMD_ERST:
+                case CMD_RSTINV:
                 case CMD_IOSW:
                 case CMD_READ:
                 case CMD_ADDRESS:

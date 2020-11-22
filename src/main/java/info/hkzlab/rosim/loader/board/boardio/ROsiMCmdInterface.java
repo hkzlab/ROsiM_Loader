@@ -88,6 +88,18 @@ public class ROsiMCmdInterface {
         return res != 0;
     }
 
+    public boolean invertReset(boolean invert) throws ROsiMProtoException, ROsiMBoardException {
+        rsm.writeCommand(ROsiMProto.buildRSTINVCommand(invert));
+        int res = ROsiMProto.handleRSTINVResponse(rsm.readResponse());
+
+        if(res < 0) {
+            logger.error("invertReset() -> FAILED!");
+            throw new ROsiMBoardException("invertReset() command failed!");
+        }
+
+        return res == 1;
+    }
+
     public boolean extReset(boolean enabled) throws ROsiMProtoException, ROsiMBoardException {
         rsm.writeCommand(ROsiMProto.buildERSTCommand(enabled));
         int res = ROsiMProto.handleERSTResponse(rsm.readResponse());

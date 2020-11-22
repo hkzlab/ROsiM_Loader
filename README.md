@@ -19,7 +19,7 @@ You'll then get your generated JARs in the `target` directory.
 Command syntax for this tool is pretty simple:
 
 ```sh
-java -jar loader.jar <serial port> <source file> <file type>
+java -jar loader.jar <serial port> <source file> <file type> [I]
 ```
 
 Where `<serial port>` is the serial device on Linux (e.g. `/dev/ttyUSB0`) or the COM port on windows (e.g. `COM4`) and `<source file>` is the file to be uploaded.
@@ -29,6 +29,8 @@ Where `<serial port>` is the serial device on Linux (e.g. `/dev/ttyUSB0`) or the
 - `BIN_8`: The file will be treated as a binary dump from an 8 bit ROM
 - `BIN_16`: The file will be treated as a binary dump from a 16 bit ROM. ODD bytes in the file will end up in the high byte of the output, EVEN bytes will end up in the low byte.
 - `BIN_16S`: The file will be treated like in `BIN_16`, but each two bytes will be swapped.
+
+If present, `I` will tell the ROsiM board to invert the external reset logic and use the `RESET` header in place of the `/RESET` one.
 
 ## Upload procedure
 

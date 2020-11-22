@@ -6,7 +6,7 @@
 
   <groupId>info.hkzlab.rosim.loader</groupId>
   <artifactId>rosim-loader</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
 
   <name>rosim-loader</name>
   <url>https://github.com/hkzlab</url>
