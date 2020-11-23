@@ -15,14 +15,13 @@ public class App {
     private static String serialDevice = null;
     private static String inFile = null;
     private static FileType fType = null;
-    private static boolean invertReset = false;
 
     public static void main(String[] args) throws Exception {
         logger.info("ROsiM Loader " + version);
 
         if (args.length < 3) {
             logger.error("Wrong number of arguments passed.\n" +
-                         "rosim-loader <serial_device> <input_file> <file_type> [I]\n\n");
+                         "rosim-loader <serial_device> <input_file> <file_type>\n\n");
 
             return;
         }
@@ -46,11 +45,6 @@ public class App {
         });
 
         rsci.setDefaults();
-
-        if(invertReset) {
-            logger.info("Using the RESET header and not the /RESET !!!");
-            rsci.invertReset(true);
-        } else rsci.invertReset(false);
 
         logger.info("Enabling external reset!");
         rsci.extReset(true); // Enable the external reset
@@ -81,8 +75,6 @@ public class App {
         }
 
         checkFilePath(inFile);
-
-        if(args.length >= 4) invertReset = args[3].equalsIgnoreCase("I");
     }
 
     private static void checkFilePath(String path) {
