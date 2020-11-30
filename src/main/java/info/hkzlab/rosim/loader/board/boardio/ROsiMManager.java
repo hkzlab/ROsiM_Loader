@@ -33,7 +33,7 @@ public class ROsiMManager {
 
         if (serport != null) {
             try {
-                serport.setParams(500000, DATABITS_8, STOPBITS_1, PARITY_NONE);
+                serport.setParams(230400, DATABITS_8, STOPBITS_1, PARITY_NONE);
             } catch (final SerialPortException e) {
                 e.printStackTrace();
                 try {
