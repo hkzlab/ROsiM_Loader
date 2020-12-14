@@ -39,7 +39,9 @@ public class ROsiMManager {
                 try {
                     serport.closePort();
                     serport = null;
-                } catch (final SerialPortException e1) { ; }
+                } catch (final SerialPortException e1) {
+                    ;
+                }
             }
         }
     }
@@ -48,7 +50,11 @@ public class ROsiMManager {
         if (serport != null && serport.isOpened()) {
             try {
                 serport.setDTR(true);
-                try { Thread.sleep(1000); } catch (final InterruptedException e) {};
+                try {
+                    Thread.sleep(1000);
+                } catch (final InterruptedException e) {
+                }
+                ;
                 serport.setDTR(false);
             } catch (final SerialPortException e) {
                 e.printStackTrace();
@@ -57,16 +63,19 @@ public class ROsiMManager {
     }
 
     private void purgeRX() {
-        if(serport != null && serport.isOpened()) {
-            while(true) {
-                try { serport.readString(50, 200); }
-                catch (SerialPortTimeoutException | SerialPortException e) { break; }
+        if (serport != null && serport.isOpened()) {
+            while (true) {
+                try {
+                    serport.readString(50, 200);
+                } catch (SerialPortTimeoutException | SerialPortException e) {
+                    break;
+                }
             }
         }
     }
 
     public void writeCommand(String command) {
-        if((serport != null) && serport.isOpened()) {
+        if ((serport != null) && serport.isOpened()) {
             try {
                 logger.trace("Command -> " + command);
                 serport.writeBytes(command.getBytes(StandardCharsets.US_ASCII));
@@ -77,20 +86,26 @@ public class ROsiMManager {
     }
 
     public String readResponse() throws ROsiMProtoException {
-         if((serport != null) && serport.isOpened()) {
+        if ((serport != null) && serport.isOpened()) {
             StringBuffer respBuf = new StringBuffer();
 
             try {
                 int retries = SERIAL_READ_RETRIES;
                 String resp = null;
-                
-                while(retries-- > 0) {
+
+                while (retries-- > 0) {
                     resp = serport.readString();
-                    if(resp == null) { try { Thread.sleep(1); } catch(InterruptedException e) {}; }
-                    else {
+                    if (resp == null) {
+                        try {
+                            Thread.sleep(1);
+                        } catch (InterruptedException e) {
+                        }
+                        ;
+                    } else {
                         respBuf.append(resp);
                         retries = SERIAL_READ_RETRIES; // Reset the retries counter
-                        if(ROsiMProto.isStringResponseCommand(respBuf.toString())) break; // If we end with a character that could terminate the response, exit from here
+                        if (ROsiMProto.isStringResponseCommand(respBuf.toString()))
+                            break; // If we end with a character that could terminate the response, exit from here
                         else if (ROsiMProto.isStringComment(respBuf.toString())) {
                             respBuf.delete(0, respBuf.length());
                             continue;
@@ -103,13 +118,13 @@ public class ROsiMManager {
                 }
 
                 logger.trace("Response <- " + respBuf.toString());
-                
+
                 return respBuf.toString().trim();
             } catch (SerialPortException e) {
                 e.printStackTrace();
             }
         }
-        
+
         return null;
     }
 
@@ -117,26 +132,32 @@ public class ROsiMManager {
         if (serport != null && serport.isOpened()) {
             resetBoard();
             try {
-                Thread.sleep(6000);
-            } catch (final InterruptedException e) {}
-            
+                Thread.sleep(1000);
+            } catch (final InterruptedException e) {
+            }
+
+            int retries = 5;
+
             // Wait for it to boot
             try {
-                serport.purgePort(PURGE_RXABORT | PURGE_TXCLEAR);
-                purgeRX();
+                while (retries-- >= 0) {
+                    logger.info("Attempting to connect to the board. Retries left " + retries);
 
-                serport.writeByte((byte) 0x78); // 'x' in ascii
-                try { Thread.sleep(100); } catch(InterruptedException e) {};
-                final String response = serport.readString();
+                    serport.purgePort(PURGE_RXABORT | PURGE_TXCLEAR);
+                    purgeRX();
 
-                if ((response != null)) {
-                    if (response.trim().endsWith(REMOTE_MODE_STRING))
-                        return true;
-                    else
-                        return false;
-                } else
-                    return false;
+                    try { Thread.sleep(100); } catch (InterruptedException e) {};
+                    final String response = serport.readString();
 
+                    if ((response != null)) {
+                        if (response.trim().endsWith(REMOTE_MODE_STRING))
+                            return true;
+                        else
+                            return false;
+                    }
+
+                    try { Thread.sleep(1000); } catch (InterruptedException e) {};
+                }
             } catch (SerialPortException e) {
                 e.printStackTrace();
                 return false;
