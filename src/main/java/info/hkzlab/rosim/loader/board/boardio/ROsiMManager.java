@@ -131,10 +131,7 @@ public class ROsiMManager {
     public boolean enterRemoteMode() {
         if (serport != null && serport.isOpened()) {
             resetBoard();
-            try {
-                Thread.sleep(1000);
-            } catch (final InterruptedException e) {
-            }
+            try { Thread.sleep(1000); } catch (final InterruptedException e) {};
 
             int retries = 5;
 
